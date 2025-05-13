@@ -12,6 +12,7 @@
         public string? Feedback { get; set; }
         public string? ReviewerEmail { get; set; }
         public string? AnonymizedFileName { get; set; }
+        public string? ReviewerFeedback { get; set; }
 
 
     }

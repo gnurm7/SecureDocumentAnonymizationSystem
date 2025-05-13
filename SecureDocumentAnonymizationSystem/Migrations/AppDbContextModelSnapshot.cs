@@ -51,6 +51,9 @@ namespace SecureDocumentAnonymizationSystem.Migrations
                     b.Property<string>("ReviewerEmail")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReviewerFeedback")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -65,6 +68,34 @@ namespace SecureDocumentAnonymizationSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Makaleler");
+                });
+
+            modelBuilder.Entity("SecureDocumentAnonymizationSystem.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("SecureDocumentAnonymizationSystem.Models.Reviewer", b =>

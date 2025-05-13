@@ -79,7 +79,14 @@ namespace SecureDocumentAnonymizationSystem.Controllers
                 return false;
             }
         }
-
+        [HttpGet("by-email/{email}")]
+        public async Task<IActionResult> GetArticlesByEmail(string email)
+        {
+            var articles = await _dbContext.Makaleler
+                .Where(a => a.Email == email)
+                .ToListAsync();
+            return Ok(articles);
+        }
 
         [HttpPut("revise/{trackingNumber}")]
         public async Task<IActionResult> ReviseFile(string trackingNumber, IFormFile newFile)

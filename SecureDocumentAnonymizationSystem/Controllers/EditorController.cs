@@ -32,16 +32,15 @@ namespace SecureDocumentAnonymizationSystem.Controllers
                     m.TrackingNumber,
                     m.FilePath,
                     m.FileName,
-                    m.AnonymizedFileName, // 👈 BUNU EKLE
+                    m.ReviewerFeedback,
+                    m.AnonymizedFileName, 
                     PdfUrl = $"{Request.Scheme}://{Request.Host}/upload/{m.FileName}"
                 })
                 .ToListAsync();
 
             return Ok(articles);
         }
-
-
-
+       
 
 
         [HttpPost("status/update")]
@@ -109,11 +108,39 @@ namespace SecureDocumentAnonymizationSystem.Controllers
         public async Task<IActionResult> GetReviewerArticles([FromQuery] string email)
         {
             var articles = await _dbContext.Makaleler
-                .Where(m => m.ReviewerEmail == email)
+                .Where(m => m.ReviewerEmail == email && m.AnonymizedFileName != null && m.AnonymizedFileName.EndsWith("_anon.pdf"))
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Status,
+                    m.TrackingNumber,
+                    m.AnonymizedFileName,
+                    PdfUrl = $"{Request.Scheme}://{Request.Host}/upload/{m.AnonymizedFileName}"
+                })
                 .ToListAsync();
 
             return Ok(articles);
         }
+        [HttpPost("review")]
+        public async Task<IActionResult> SubmitReview([FromBody] ReviewRequest model)
+        {
+            var article = await _dbContext.Makaleler.FindAsync(model.ArticleId);
+            if (article == null)
+                return NotFound("Makale bulunamadı.");
+
+            article.ReviewerFeedback = model.ReviewText;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Hakem değerlendirmesi kaydedildi." });
+        }
+
+        public class ReviewRequest
+        {
+            public int ArticleId { get; set; }
+            public string ReviewText { get; set; }
+        }
+
+
         [HttpPost("anonymized-pdf")]
         public async Task<IActionResult> SaveAnonymizedPdf([FromBody] AnonymizedPdfModel model)
         {
